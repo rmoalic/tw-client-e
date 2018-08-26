@@ -1,0 +1,25 @@
+{% macro user_squared(user, control=False) -%}
+<div class="usr">
+	<div class="usr_title">
+		<h1>
+			<span class="usr_tn">{{ user.name }}</span> - <span class="usr_name">@{{ user.screen_name }}</span>
+	        	{% if user.protected %}<span class="usr_protected usr_trinket">&#x1F512;</span>{% endif %}
+	        	{% if user.verified %}<span class="usr_verified usr_trinket">&#x2714;&#xFE0F;</span>{% endif %}
+		</h1>
+	</div>
+	<div class="usr_picture">
+		<a href="https://twitter.com/{{ user.screen_name }}"><img src="{{ user.profile_image_url_https }}" /></a>
+	</div>
+	<ul>
+		<li class="usr_tweets">Tweets: <span>{{ user.statuses_count }}</span></li>
+		<li class="usr_followers">Followers: <a href="{{ url_for("list_followers", id=user.id) }}"><span>{{ user.followers_count }}</span></a></li>
+		<li class="usr_follows">Following: <a href="{{ url_for("list_following", id=user.id) }}"><span>{{ user.friends_count }}</span></a></li>
+		<li class="usr_favs">Favoris: <span>{{ user.favourites_count }}</span></li>
+		<li class="usr_lang">Langage: <span>{{ user.lang }}</span></li>
+		<li class="usr_local">Localisation: <span>{{ user.location }}</span></li>
+	</ul>
+	<p>
+		{{ user.description }}
+	</p>
+</div>
+{%- endmacro %}

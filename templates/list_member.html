@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+{% from "user.html" import user_squared with context %}
+<style>
+.usrs {
+	display: grid;
+	grid-template-columns: auto auto auto;
+	grid-gap: 5px;
+}
+
+.usr {
+	display: inline-grid;
+	grid-template-columns: 150px 300px;
+	margin-left: auto;
+	margin-right: auto;
+	border: 2px solid gray;
+}
+
+.usr .usr_picture{
+       grid-column: 1;
+       grid-row: 2;
+}
+
+.usr .usr_picture img {
+	width: 150px;
+	height: 150px;
+}
+
+.usr .usr_title {
+       grid-column: 1/3;
+       grid-row: 1;
+}
+
+.usr .usr_title h1 {
+	display: inline;
+	font-size: 20pt;
+}
+
+.usr .usr_title .usr_name {
+	font-size: 80%;
+}
+
+.usr ul {
+	grid-column: 2;
+	grid-row: 2;
+}
+
+.usr p {
+	grid-column: 1/3;
+	grid-row: 3;
+	text-align: center;
+	margin: 3px;
+}
+</style>
+
+<div>
+{% if members %}
+	<div class="usrs">
+	{% for membre in members %}
+		{{ user_squared(membre, control=False) }}
+	{% endfor %}
+	</div>
+{% else %}
+<p>
+	Pas d'utilisateurs dans cette liste
+</p>
+{% endif %}
+</div>
+

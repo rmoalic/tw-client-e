@@ -1,0 +1,46 @@
+{% macro tweet(content, control=False) -%}
+{% if not content.retweeted_status %}
+	{% set usr=content.user %}
+{% else %}
+	{% set usr=content.retweeted_status.user %}
+{% endif %}
+<div class="tweet {% if content.possibly_sensitive %}notsafe{% endif %}">
+	{% if content.retweeted_status %}
+		<div class="tweet_rt">
+			<span>{{ content.user.screen_name }}</span> à retweeter
+		</div>
+	{% endif %}
+	<div class="tweet_title">
+		<h1>
+			<span class="tweet_tn">{{ usr.name | e }}</span> - <span class="tweet_name">@{{ usr.screen_name | e }}</span>
+	        	{% if usr.protected %}<span class="tweet_protected tweet_trinket">&#x1F512;</span>{% endif %}
+	        	{% if usr.verified %}<span class="tweet_verified tweet_trinket">&#x2714;&#xFE0F;</span>{% endif %}
+		</h1>
+	</div>
+	<div class="tweet_picture">
+		<a href="https://twitter.com/{{ usr.screen_name | e }}"><img src="{{ usr.profile_image_url_https | e }}" /></a>
+	</div>
+	<p>
+		{{ content.text }}
+	</p>
+	{% if content.media %}
+	<div class="tweet_media">
+		{% for media in content.media %}
+			{% if media.type == "photo" %}
+				<img src="{{ media.media_url_https }}" height="{{ media.sizes.small.h }}" width="{{ media.sizes.small.w }}" />
+			{% endif %}
+			{% if media.type == "animated_gif" %}
+				<video autoplay loop poster="{{ media.media_url_https }}" height="{{ media.sizes.small.h }}" width="{{ media.sizes.small.w }}">
+					{% for s in media.video_info.variants %}
+						<source src="{{ s.url }}" type="{{ s.content_type }}" /> 
+					{% endfor %}
+				</video> 
+			{% endif %}
+		{% endfor %}
+	</div>
+	{% endif %}
+	<div class="tweet_info">
+		<pre>{{ content }}</pre>
+	</div>
+</div>
+{%- endmacro %}

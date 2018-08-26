@@ -1,0 +1,25 @@
+<!doctype html>
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
+
+{% if lists %}
+	{% for list in lists %}
+	<div class="list">
+		<h1>{{ list.name }}</h1>
+		<a href="{{ url_for('list_members', id=list.id) }}">Info</a>
+		<a href="{{ url_for('list_timeline', id=list.id) }}">Timeline</a>
+	</div>
+	{% endfor %}
+{% else %}
+<p>
+	L'utilisateur n'a pas créé de listes
+</p>
+{% endif %}
