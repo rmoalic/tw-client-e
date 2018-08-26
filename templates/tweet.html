@@ -7,7 +7,7 @@
 <div class="tweet {% if content.possibly_sensitive %}notsafe{% endif %}">
 	{% if content.retweeted_status %}
 		<div class="tweet_rt">
-			<span>{{ content.user.screen_name }}</span> à retweeter
+			<span>{{ content.user.screen_name }}</span> a retweeter
 		</div>
 	{% endif %}
 	<div class="tweet_title">
@@ -31,6 +31,13 @@
 			{% endif %}
 			{% if media.type == "animated_gif" %}
 				<video autoplay loop poster="{{ media.media_url_https }}" height="{{ media.sizes.small.h }}" width="{{ media.sizes.small.w }}">
+					{% for s in media.video_info.variants %}
+						<source src="{{ s.url }}" type="{{ s.content_type }}" /> 
+					{% endfor %}
+				</video> 
+			{% endif %}
+			{% if media.type == "video" %}
+				<video controls poster="{{ media.media_url_https }}" height="{{ media.sizes.small.h }}" width="{{ media.sizes.small.w }}">
 					{% for s in media.video_info.variants %}
 						<source src="{{ s.url }}" type="{{ s.content_type }}" /> 
 					{% endfor %}
