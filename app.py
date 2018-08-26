@@ -47,7 +47,13 @@ def list_timeline():
 
 def htmlize_tweet(t):
     if t.retweeted_status:
-        t.full_text = t.full_text.split(": ")[1]
+        t.full_text = t.retweeted_status.full_text
+        t.urls = t.retweeted_status.urls
+        t.user_mentions = t.retweeted_status.user_mentions
+        t.hashtags = t.retweeted_status.hashtags
+        if t.retweeted_status.media:
+            t.media = t.retweeted_status.media
+    t.full_text = t.full_text.replace("\n", "<br />")
     for url in t.urls:
         t.full_text = t.full_text.replace(url.url, "<a href=\"{}\" class=\"tweet_link\">{}</a>".format(url.expanded_url, url.url))
     for u in t.user_mentions:
