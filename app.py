@@ -11,7 +11,10 @@ app.secret_key = config["flask"].get('secret_key')
 api = twitter.Api(consumer_key=config["twitter"].get("consumer_key"),
                   consumer_secret=config["twitter"].get("consumer_secret"),
                   access_token_key=config["twitter"].get("access_token_key"),
-                  access_token_secret=config["twitter"].get("access_token_secret"))
+                  access_token_secret=config["twitter"].get("access_token_secret"),
+                  cache=None,
+                  sleep_on_rate_limit=True,
+                  tweet_mode="extended")
 
 print(api.VerifyCredentials())
 
@@ -44,17 +47,17 @@ def list_timeline():
 
 def htmlize_tweet(t):
     if t.retweeted_status:
-        t.text = t.text.split(": ")[1]
+        t.full_text = t.full_text.split(": ")[1]
     for url in t.urls:
-        t.text = t.text.replace(url.url, "<a href=\"{}\" class=\"tweet_link\">{}</a>".format(url.expanded_url, url.url))
+        t.full_text = t.full_text.replace(url.url, "<a href=\"{}\" class=\"tweet_link\">{}</a>".format(url.expanded_url, url.url))
     for u in t.user_mentions:
-        t.text = t.text.replace("@{}".format(u.screen_name), "<a href=\"#\" class=\"tweet_mention\">@{}</a>".format(u.screen_name))
+        t.full_text = t.full_text.replace("@{}".format(u.screen_name), "<a href=\"#\" class=\"tweet_mention\">@{}</a>".format(u.screen_name))
     for h in t.hashtags:
-        t.text = t.text.replace("#{}".format(h.text), "<a href=\"#\" class=\"tweet_hashtag\">#{}</a>".format(h.text))
+        t.full_text = t.full_text.replace("#{}".format(h.text), "<a href=\"#\" class=\"tweet_hashtag\">#{}</a>".format(h.text))
     if t.media:
         for med in t.media:
-            t.text = t.text.replace(med.url, "")
-    t.text = Markup(t.text)
+            t.full_text = t.full_text.replace(med.url, "")
+    t.full_text = Markup(t.full_text)
     return t
 
 @app.route("/lists")
@@ -102,12 +105,12 @@ def sort_userlist(user_list):
 
 #tl = api.GetHomeTimeline()
 #for status in tl:
-#    print("{}:\t{}\n\n".format(status.user.name, status.text))
+#    print("{}:\t{}\n\n".format(status.user.name, status.full_text))
 """
 print(api.GetLists())
 
 tl = api.GetListTimeline(list_id=1006990616050454529)
 for status in tl:
-    print("{}: {}".format(status.user.name, status.text))
+    print("{}: {}".format(status.user.name, status.full_text))
 """
 app.run(debug=True, use_debugger=True, use_reloader=True)
