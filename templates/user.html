@@ -2,7 +2,7 @@
 <div class="usr">
 	<div class="usr_title">
 		<h1>
-			<span class="usr_tn">{{ user.name }}</span> - <span class="usr_name">@{{ user.screen_name }}</span>
+			<a href="{{ url_for('user_summary', id=user.id)}}"><span class="usr_tn">{{ user.name }}</span> - <span class="usr_name">@{{ user.screen_name }}</span></a>
 	        	{% if user.protected %}<span class="usr_protected usr_trinket">&#x1F512;</span>{% endif %}
 	        	{% if user.verified %}<span class="usr_verified usr_trinket">&#x2714;&#xFE0F;</span>{% endif %}
 		</h1>

@@ -12,7 +12,7 @@
 	{% endif %}
 	<div class="tweet_title">
 		<h1>
-			<span class="tweet_tn">{{ usr.name | e }}</span> - <span class="tweet_name">@{{ usr.screen_name | e }}</span>
+			<a href="{{ url_for('user_summary', id=usr.id)}}"><span class="tweet_tn">{{ usr.name | e }}</span> - <span class="tweet_name">@{{ usr.screen_name | e }}</span></a>
 	        	{% if usr.protected %}<span class="tweet_protected tweet_trinket">&#x1F512;</span>{% endif %}
 	        	{% if usr.verified %}<span class="tweet_verified tweet_trinket">&#x2714;&#xFE0F;</span>{% endif %}
 		</h1>

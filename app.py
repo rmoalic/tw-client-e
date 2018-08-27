@@ -33,6 +33,21 @@ def timeline():
         return redirect(url_for("lists"))
     return render_template("tweet_list.html", tweets=tl)
 
+@app.route("/user")
+def user_summary():
+    _id = request.args.get("id", None, type=int)
+    try:
+        user = api.GetUser(user_id=_id)
+        user.profile_image_url_https = user.profile_image_url_https.replace('normal', '200x200')
+        tl = api.GetUserTimeline(user_id=_id)
+        for t in tl:
+            t = htmlize_tweet(t)
+    except twitter.error.TwitterError as e:
+        flash("Une erreur est survenue: {}".format(e.message))
+        return redirect(url_for("lists"))
+    return render_template("user_summary.html", user=user, tweets=tl)
+
+
 @app.route("/list/timeline")
 def list_timeline():
     _id = request.args.get("id", type=int)

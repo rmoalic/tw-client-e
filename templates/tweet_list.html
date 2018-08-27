@@ -1,90 +1,5 @@
 {% from "tweet.html" import tweet with context %}
-<!DOCTYPE html>
-<style>
-.tweets {
-	display: grid;
-	grid-gap: 5px;
-}
-
-.tweet {
-	display: inline-grid;
-	position: relative;
-	grid-template-columns: 48px 632px;
-	margin-left: auto;
-	margin-right: auto;
-	border: 2px solid gray;
-}
-
-.tweet .tweet_picture{
-       grid-column: 1;
-       grid-row: 2;
-}
-
-.tweet .tweet_picture img {
-	width: 48px;
-	height: 48px;
-}
-
-.tweet .tweet_rt {
-	grid-column: 2;
-	grid-row: 1;
-}
-
-.tweet .tweet_title {
-       grid-column: 2;
-       grid-row: 2;
-}
-
-.tweet .tweet_title h1 {
-	font-size: 16pt;
-	margin: 7px 0 7px 7px;
-}
-
-.tweet .tweet_title .tweet_name {
-	font-size: 80%;
-}
-
-.tweet p {
-	grid-column: 1/3;
-	grid-row: 3;
-	text-align: center;
-	margin: 3px;
-}
-
-.tweet .tweet_media {
-	grid-column: 1/3;
-	grid-row: 4;
-	margin: auto;
-}
-
-.tweet .tweet_info {
-	grid-column : 1/3;
-	grid-row:5;
-}
-
-.notsafe:before {
-	position: absolute;
-	content: 'nsfw';
-	background: rgba(2,2,2,0.9);
-	width: 100%;
-	height: 100%;
-	top: 0;
-	left: 0;
-	pointer-events: none;
-	text-align: center;
-	font-size: 30px;
-	font-variant: small-caps;
-	font-weight: bolder;
-	color: aquamarine;
-}
-
-.notsafe:hover:before {
-	background: rgba(0,0,0,0);
-	content: '';
-}
-</style>
-
-<div>
+{% macro tweet_list(tweets) -%}
 {% if tweets %}
 	<div class="tweets">
 	{% for tw in tweets %}
@@ -92,9 +7,14 @@
 	{% endfor %}
 	</div>
 {% else %}
-<p>
+<p class="tweets notweets">
 	Pas de tweets à afficher
 </p>
 {% endif %}
-</div>
+{%- endmacro %}
 
+{% extends "base.html" %}
+{% block title %}{% endblock %}
+{% block body %}
+{{ tweet_list(tweets) }}
+{% endblock %}

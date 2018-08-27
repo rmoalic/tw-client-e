@@ -1,0 +1,10 @@
+{% from "user.html" import user_squared with context %}
+{% from "tweet_list.html" import tweet_list with context %}
+{% extends "base.html" %}
+{% block title %}@{{ user.screen_name }}{% endblock %}
+{% block body %}
+<div class="usr_summary">
+	{{ user_squared(user) }}
+	{{ tweet_list(tweets) }}
+</div>
+{% endblock %}
