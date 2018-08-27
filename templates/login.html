@@ -1,0 +1,5 @@
+<a href="{{ url }}">Cliquer ici puis entrer le code pin dans le champs ci-dessous</a>
+<form action="{{ url_for('login_page') }}" method="POST">
+	<input type="text" name="pin" required />
+	<input type="submit" />
+</form>
