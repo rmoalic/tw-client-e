@@ -7,6 +7,17 @@
 		<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 	</head>
 	<body>
+		<nav>	
+			<span id="logo">&#x1f31d;</span>
+			<ul>
+				<li><a href="{{ url_for('timeline')}}">Timeline</a></li>
+				<li><a href="{{ url_for('lists')}}">Lists</a></li>
+			</ul>
+			<form class="search">
+				<input type="text"/>
+				<input type="submit"/>
+			</form>
+		</nav>
 		{% with messages = get_flashed_messages() %}
 		  {% if messages %}
 		    <ul class=flashes>
