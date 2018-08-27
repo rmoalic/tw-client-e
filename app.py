@@ -2,11 +2,9 @@ import twitter
 import json
 import configparser
 from functools import wraps
-from requests_oauthlib import OAuth1Session
+from requests_oauthlib import OAuth1Session, oauth1_session
 from flask import Flask, render_template, request, redirect, url_for, flash, Markup, session
 app = Flask(__name__)
-
-online = True
 
 config = configparser.ConfigParser()
 config.read("config.ini")
@@ -34,17 +32,22 @@ def login_page():
     consumer_key=config["twitter"].get("consumer_key")
     consumer_secret=config["twitter"].get("consumer_secret")
     verifier = request.args.get("oauth_verifier", "")
-    if request.method == "GET" and verifier == "":
-        callback = url_for("login_page", _external=True) if online else "oob"
-        print (callback)
-        oauth_client = OAuth1Session(consumer_key, client_secret=consumer_secret,
-                                     callback_uri=callback)
-        resp = oauth_client.fetch_request_token("https://api.twitter.com/oauth/request_token")
+    if request.method == "GET" and verifier == "": # Etape 1: récuperer le secret et demander le verifier
+        fancy_redirect = True
+        try: # Tentative de connection avec redirection. PIN si echec
+            oauth_client = OAuth1Session(consumer_key, client_secret=consumer_secret,
+                                     callback_uri=url_for("login_page", _external=True))
+            resp = oauth_client.fetch_request_token("https://api.twitter.com/oauth/request_token")
+        except oauth1_session.TokenRequestDenied as e:
+            fancy_redirect = False
+            oauth_client = OAuth1Session(consumer_key, client_secret=consumer_secret,
+                                     callback_uri="oob")
+            resp = oauth_client.fetch_request_token("https://api.twitter.com/oauth/request_token")
         url = oauth_client.authorization_url("https://api.twitter.com/oauth/authorize")
-        session['temp_oauth_token'] = resp.get('oauth_token')
+        session['temp_oauth_token'] = resp.get('oauth_token') # Stockage des secrets pour l'étape 2
         session['temp_oauth_token_secret'] = resp.get('oauth_token_secret')
-        return render_template('login.html', url=url) if not online else redirect(url)
-    else:
+        return redirect(url) if fancy_redirect else render_template('login.html', url=url)
+    else: # Etape 2: recuperer le verifier et demander les token de connection
         if verifier != "":
             pincode = verifier
         else:
@@ -59,6 +62,7 @@ def login_page():
         session['oauth_token'] = resp.get('oauth_token')
         session['oauth_token_secret'] = resp.get('oauth_token_secret')
         return redirect('home')
+
 
 @app.route("/logout")
 def logout():
