@@ -14,9 +14,9 @@
 				<li><a href="{{ url_for('lists')}}">Lists</a></li>
 				<li><a href="{{ url_for('logout')}}">Se deconnecter</a></li>
 			</ul>
-			<form class="search">
-				<input type="text"/>
-				<input type="submit"/>
+			<form class="search" action="{{ url_for('search') }}" method="GET">
+				<input type="text" name="query" value="{{ search_query if search_query }}"/>
+				<input type="submit" value="Recherche"/>
 			</form>
 		</nav>
 		{% with messages = get_flashed_messages() %}

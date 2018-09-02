@@ -3,7 +3,7 @@ import json
 import configparser
 from functools import wraps
 from requests_oauthlib import OAuth1Session, oauth1_session
-from flask import Flask, render_template, request, redirect, url_for, flash, Markup, session
+from flask import Flask, render_template, request, redirect, url_for, flash, Markup, session, abort
 app = Flask(__name__)
 
 config = configparser.ConfigParser()
@@ -135,6 +135,19 @@ def htmlize_tweet(t):
             t.full_text = t.full_text.replace(med.url, "")
     t.full_text = Markup(t.full_text)
     return t
+
+@app.route('/search', methods=["GET"])
+@requires_auth
+def search():
+    q = request.args.get("query", type=str)
+    if q:
+        results = make_api().GetSearch(term=q)
+        for t in results:
+            t = htmlize_tweet(t)
+        return render_template("tweet_list.html", tweets=results, search_query=q)
+    else:
+        abort(400)
+
 
 @app.route("/lists")
 @requires_auth

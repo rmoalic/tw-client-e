@@ -7,7 +7,7 @@
 <div class="tweet {% if content.possibly_sensitive %}notsafe{% endif %}">
 	{% if content.retweeted_status %}
 		<div class="tweet_rt">
-			<span>{{ content.user.screen_name }}</span> a retweeter
+			<a href="{{ url_for('user_summary', id=content.user.id)}}"><span>{{ content.user.screen_name | e }}</span></a> a retweeter
 		</div>
 	{% endif %}
 	<div class="tweet_title">
