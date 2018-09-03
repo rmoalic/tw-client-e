@@ -103,6 +103,10 @@ nav .search {
 	grid-gap: 5px;
 }
 
+.tweet-sub {
+	margin-left: 25px;
+}
+
 .tweet {
 	display: inline-grid;
 	position: relative;
@@ -179,6 +183,7 @@ nav .search {
 	background: rgba(0,0,0,0);
 	content: '';
 }
+
 
 /* User Summary */
 

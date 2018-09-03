@@ -1,8 +1,10 @@
 {% macro tweet(content, control=False) -%}
 {% if not content.retweeted_status %}
 	{% set usr=content.user %}
+	{% set id=content.id %}
 {% else %}
 	{% set usr=content.retweeted_status.user %}
+	{% set id=content.retweeted_status.id %}
 {% endif %}
 <div class="tweet {% if content.possibly_sensitive %}notsafe{% endif %}">
 	{% if content.retweeted_status %}
@@ -47,6 +49,7 @@
 	</div>
 	{% endif %}
 	<div class="tweet_info">
+		<a href="{{ url_for('tweet_info_response', id=id) }}">Réponses</a>
 		<pre>{{ content }}</pre>
 	</div>
 </div>

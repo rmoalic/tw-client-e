@@ -136,6 +136,47 @@ def htmlize_tweet(t):
     t.full_text = Markup(t.full_text)
     return t
 
+@app.route("/tweet/response")
+@requires_auth
+def tweet_info_response():
+    _id = request.args.get("id", type=int)
+    if _id:
+        try:
+            api = make_api()
+            tweet = api.GetStatus(_id)
+            rep = list(get_replies(api, tweet))
+        except twitter.error.TwitterError as e:
+            flash("Une erreur est survenue: {}".format(e.message))
+            return redirect(url_for("home"))
+#        for r in rep:
+#           r = htmlize_tweet(r)
+        return render_template("tweet_replies.html", tweets=rep)
+            
+    
+def get_replies(api, tweet): # source : https://gist.github.com/edsu/54e6f7d63df3866a87a15aed17b51eaf
+    user = tweet.user.screen_name
+    tweet_id = tweet.id
+    max_id = None
+    while True:
+        q = "q=to%3A{}".format(user)
+        try:
+            replies = api.GetSearch(raw_query=q, since_id=tweet_id, max_id=max_id, count=100)
+        except twitter.error.TwitterError as e:
+            flash("Une erreur est survenue: {}".format(e.message))
+            return redirect(url_for("home"))
+        for reply in replies:
+            if reply.in_reply_to_status_id == tweet_id:
+                rep = [reply]
+                rep2 = []
+                for reply_to_reply in get_replies(api, reply):
+                    rep2.append(reply_to_reply)
+                if len(rep2) != 0:
+                    rep.append(rep2)
+                yield rep
+            max_id = reply.id
+        if len(replies) != 100:
+            break
+
 @app.route('/search', methods=["GET"])
 @requires_auth
 def search():
@@ -152,7 +193,6 @@ def search():
 @app.route("/lists")
 @requires_auth
 def lists():
-    print(session)
     return render_template("lists.html", lists=make_api().GetLists())
 
 @app.route("/list/members")
@@ -197,4 +237,5 @@ def render_userlist(user_list):
 def sort_userlist(user_list):
     return sorted(user_list, key=lambda x: x.status.created_at_in_seconds if x.status else 0, reverse=True)
 
-app.run(debug=True, use_debugger=True, use_reloader=True)
+if __name__ == "__main__":
+    app.run(debug=True, use_debugger=True, use_reloader=True)
