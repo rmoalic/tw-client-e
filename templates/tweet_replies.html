@@ -1,0 +1,28 @@
+{% from "tweet.html" import tweet with context %}
+{% extends "base.html" %}
+{% block title %}{% endblock %}
+{% block body %}
+
+{% if tweets %}
+	<div class="tweets">
+	{% for tw in tweets recursive %}
+		{% if tw is sequence %}
+			{%  if loop.depth > 2 %}
+				<div class="tweet-sub">
+					{{ loop(tw) }}
+				</div>
+			{% else %}
+				{{ loop(tw) }}
+			{% endif %}
+		{% else %}
+				{{ tweet(tw, control=False) }}
+		{% endif %}
+	{% endfor %}
+	</div>
+{% else %}
+<p class="tweets notweets">
+	Pas de tweets à afficher
+</p>
+{% endif %}
+
+{% endblock %}

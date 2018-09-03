@@ -158,12 +158,11 @@ def get_replies(api, tweet): # source : https://gist.github.com/edsu/54e6f7d63df
     tweet_id = tweet.id
     max_id = None
     while True:
-        q = "q=to%3A{}".format(user)
+        q = "to:{}".format(user)
         try:
-            replies = api.GetSearch(raw_query=q, since_id=tweet_id, max_id=max_id, count=100)
+            replies = api.GetSearch(term=q, since_id=tweet_id, max_id=max_id, count=200)
         except twitter.error.TwitterError as e:
             flash("Une erreur est survenue: {}".format(e.message))
-            return redirect(url_for("home"))
         for reply in replies:
             if reply.in_reply_to_status_id == tweet_id:
                 rep = [reply]
@@ -174,7 +173,7 @@ def get_replies(api, tweet): # source : https://gist.github.com/edsu/54e6f7d63df
                     rep.append(rep2)
                 yield rep
             max_id = reply.id
-        if len(replies) != 100:
+        if len(replies) != 200:
             break
 
 @app.route('/search', methods=["GET"])
