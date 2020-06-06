@@ -172,18 +172,26 @@ def tweet_info_response():
             api = make_api()
             tweet = api.GetStatus(_id)
             rep = list(get_replies(api, tweet))
+            prev = get_replied_tweets(api, tweet)
         except twitter.error.TwitterError as e:
             flash("Une erreur est survenue: {}".format(e.message))
             return redirect(url_for("home"))
 #        for r in rep:
 #           r = htmlize_tweet(r)
-        return render_template("tweet_replies.html", tweets=rep)
-            
-    
-def get_replies(api, tweet): # source : https://gist.github.com/edsu/54e6f7d63df3866a87a15aed17b51eaf
+        return render_template("tweet_replies.html", tweet_initial=tweet, tweets=rep, prev=prev)
+
+def get_replied_tweets(api, tweet):
+    ret = list()
+    _id = tweet.in_reply_to_status_id
+    while _id != None:
+        tw = api.GetStatus(_id)
+        ret.append(tw)
+        _id = tw.in_reply_to_status_id
+    return ret
+
+def get_replies(api, tweet, max_id=None): # source : https://gist.github.com/edsu/54e6f7d63df3866a87a15aed17b51eaf
     user = tweet.user.screen_name
     tweet_id = tweet.id
-    max_id = None
     while True:
         q = "to:{}".format(user)
         try:

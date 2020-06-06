@@ -3,26 +3,30 @@
 {% block title %}{% endblock %}
 {% block body %}
 
-{% if tweets %}
-	<div class="tweets">
-	{% for tw in tweets recursive %}
-		{% if tw is sequence %}
-			{%  if loop.depth > 2 %}
-				<div class="tweet-sub">
-					{{ loop(tw) }}
-				</div>
-			{% else %}
+<div class="tweets replies">
+{% for tw in prev %}
+<div class="tweet-prev">
+	{{ tweet(tw, control=False) }}
+</div>
+{% endfor %}
+<div class="tweet-origin" id="origin">
+	{{ tweet(tweet_initial, control=False) }}
+</div>
+{% for tw in tweets recursive %}
+	{% if tw is sequence %}
+		{%  if loop.depth > 2 %}
+			<div class="tweet-sub">
 				{{ loop(tw) }}
-			{% endif %}
+			</div>
 		{% else %}
-				{{ tweet(tw, control=False) }}
+			<div class="tweet-init">
+				{{ loop(tw) }}
+			</div>
 		{% endif %}
-	{% endfor %}
-	</div>
-{% else %}
-<p class="tweets notweets">
-	Pas de tweets à afficher
-</p>
-{% endif %}
+	{% else %}
+			{{ tweet(tw, control=False) }}
+	{% endif %}
+{% endfor %}
+</div>
 
 {% endblock %}

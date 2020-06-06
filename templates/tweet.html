@@ -54,7 +54,7 @@
 			<span> <span>{{ content.favorite_count }}</span> FAV</span>
 		</div>
 		<span class="tweet_date">{{ content.created_at }}</span>
-		<a href="{{ url_for('tweet_info_response', id=id) }}">Réponses</a>
+		<a href="{{ url_for('tweet_info_response', id=id, _anchor='origin') }}">Réponses</a>
 		{% if False %}
 		<pre style="overflow: hidden">{{ content }}</pre>
 		{% endif %}

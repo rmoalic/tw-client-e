@@ -118,6 +118,18 @@ nav .search {
 	color: black;
 }
 
+.replies {
+	margin-left: 5px;
+}
+
+.tweet-prev .tweet{
+	background-color: lightcyan;
+}
+
+.tweet-init {
+	margin-left: 0;	
+}
+
 .tweet-sub {
 	margin-left: 25px;
 }
@@ -129,6 +141,10 @@ nav .search {
 	margin-left: auto;
 	margin-right: auto;
 	border: 2px solid gray;
+}
+
+.tweets .tweet-origin .tweet {
+	background-color: khaki;
 }
 
 .tweet .tweet_color_bar {
