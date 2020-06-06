@@ -51,10 +51,13 @@
 	<div class="tweet_info">
 		<div class="tweet_action_bar">
 			<span><span>{{ content.retweet_count }}</span> RT</span>
+			<span> <span>{{ content.favorite_count }}</span> FAV</span>
 		</div>
 		<span class="tweet_date">{{ content.created_at }}</span>
 		<a href="{{ url_for('tweet_info_response', id=id) }}">Réponses</a>
+		{% if False %}
 		<pre style="overflow: hidden">{{ content }}</pre>
+		{% endif %}
 		<div class="tweet_color_bar" style="background-color: #{{ usr.profile_link_color }}"></div>
 	</div>
 </div>
