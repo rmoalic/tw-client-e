@@ -207,8 +207,9 @@ def get_replies(api, tweet): # source : https://gist.github.com/edsu/54e6f7d63df
 @requires_auth
 def search():
     q = request.args.get("query", type=str)
+    _last_tweet = request.args.get('last_tweet', None, type=int)
     if q:
-        results = make_api().GetSearch(term=q)
+        results = make_api().GetSearch(term=q, count=20, max_id=_last_tweet, result_type="recent")
         for t in results:
             t = htmlize_tweet(t)
         return render_template("tweet_list.html", tweets=results, search_query=q)
