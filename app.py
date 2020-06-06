@@ -1,14 +1,23 @@
 import twitter
 import json
 import configparser
+import os
 from functools import wraps
 from requests_oauthlib import OAuth1Session, oauth1_session
 from flask import Flask, render_template, request, redirect, url_for, flash, Markup, session, abort
 app = Flask(__name__)
 
-config = configparser.ConfigParser()
-config.read("config.ini")
-app.secret_key = config["flask"].get('secret_key')
+def init_config(config_file):
+    config = configparser.ConfigParser()
+    config.read(config_file)
+    def get_config(key, val):
+        ev = "{}_{}".format(key, val)
+        return os.environ[ev] if ev in os.environ else config[key].get(val)
+    return get_config
+
+get_config = init_config("config.ini")
+
+app.secret_key = get_config("flask", "secret_key")
 
 def requires_auth(f):
     @wraps(f)
@@ -19,8 +28,8 @@ def requires_auth(f):
     return decorated
 
 def make_api():
-    return twitter.Api(consumer_key=config["twitter"].get("consumer_key"),
-                  consumer_secret=config["twitter"].get("consumer_secret"),
+    return twitter.Api(consumer_key=get_config("twitter", "consumer_key"),
+                  consumer_secret=get_config("twitter", "consumer_secret"),
                   access_token_key=session['oauth_token'],
                   access_token_secret=session['oauth_token_secret'],
                   cache=None,
@@ -29,8 +38,8 @@ def make_api():
 
 @app.route("/login", methods=['GET', 'POST'])
 def login_page():
-    consumer_key=config["twitter"].get("consumer_key")
-    consumer_secret=config["twitter"].get("consumer_secret")
+    consumer_key=get_config("twitter", "consumer_key")
+    consumer_secret=get_config("twitter", "consumer_secret")
     verifier = request.args.get("oauth_verifier", "")
     if request.method == "GET" and verifier == "": # Etape 1: récuperer le secret et demander le verifier
         fancy_redirect = True
