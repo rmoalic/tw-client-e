@@ -77,8 +77,9 @@ def home():
 @app.route("/timeline")
 @requires_auth
 def timeline():
+    _last_tweet = request.args.get('last_tweet', None, type=int)
     try:
-        tl = make_api().GetHomeTimeline()
+        tl = make_api().GetHomeTimeline(count=200, max_id=_last_tweet)
         for t in tl:
             t = htmlize_tweet(t)
     except twitter.error.TwitterError as e:
@@ -90,10 +91,11 @@ def timeline():
 @requires_auth
 def user_summary():
     _id = request.args.get("id", None, type=int)
+    _last_tweet = request.args.get('last_tweet', None, type=int)
     try:
         user = make_api().GetUser(user_id=_id)
         user.profile_image_url_https = user.profile_image_url_https.replace('normal', '200x200')
-        tl = make_api().GetUserTimeline(user_id=_id)
+        tl = make_api().GetUserTimeline(user_id=_id, count=200, max_id=_last_tweet)
         for t in tl:
             t = htmlize_tweet(t)
     except twitter.error.TwitterError as e:
@@ -106,8 +108,9 @@ def user_summary():
 @requires_auth
 def list_timeline():
     _id = request.args.get("id", type=int)
+    _last_tweet = request.args.get('last_tweet', None, type=int)
     try:
-        tl = make_api().GetListTimeline(list_id=_id)
+        tl = make_api().GetListTimeline(list_id=_id, count=200, max_id=_last_tweet)
         for t in tl:
             t = htmlize_tweet(t)
     except twitter.error.TwitterError as e:

@@ -14,7 +14,7 @@
 	{% endif %}
 	<div class="tweet_title">
 		<h1>
-			<a href="{{ url_for('user_summary', id=usr.id)}}"><span class="tweet_tn">{{ usr.name | e }}</span> - <span class="tweet_name">@{{ usr.screen_name | e }}</span></a>
+		<a href="{{ url_for('user_summary', id=usr.id)}}"><span class="tweet_tn">{{ usr.name | e }}</span> - <span class="tweet_name">@{{ usr.screen_name | e }}</span></a>
 	        	{% if usr.protected %}<span class="tweet_protected tweet_trinket">&#x1F512;</span>{% endif %}
 	        	{% if usr.verified %}<span class="tweet_verified tweet_trinket">&#x2714;&#xFE0F;</span>{% endif %}
 		</h1>
@@ -49,8 +49,13 @@
 	</div>
 	{% endif %}
 	<div class="tweet_info">
+		<div class="tweet_action_bar">
+			<span><span>{{ content.retweet_count }}</span> RT</span>
+		</div>
+		<span class="tweet_date">{{ content.created_at }}</span>
 		<a href="{{ url_for('tweet_info_response', id=id) }}">Réponses</a>
-		<pre>{{ content }}</pre>
+		<pre style="overflow: hidden">{{ content }}</pre>
+		<div class="tweet_color_bar" style="background-color: #{{ usr.profile_link_color }}"></div>
 	</div>
 </div>
 {%- endmacro %}
