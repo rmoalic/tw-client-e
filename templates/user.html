@@ -14,7 +14,7 @@
 		<li class="usr_tweets">Tweets: <span>{{ user.statuses_count }}</span></li>
 		<li class="usr_followers">Followers: <a href="{{ url_for("list_followers", id=user.id) }}"><span>{{ user.followers_count }}</span></a></li>
 		<li class="usr_follows">Following: <a href="{{ url_for("list_following", id=user.id) }}"><span>{{ user.friends_count }}</span></a></li>
-		<li class="usr_favs">Favoris: <span>{{ user.favourites_count }}</span></li>
+		<li class="usr_favs">Favoris: <a href="{{ url_for("user_favorites", id=user.id) }}"><span>{{ user.favourites_count }}</span></a></li>
 		<li class="usr_lang">Langage: <span>{{ user.lang }}</span></li>
 		<li class="usr_local">Localisation: <span>{{ user.location }}</span></li>
 	</ul>

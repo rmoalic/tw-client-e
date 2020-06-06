@@ -103,6 +103,21 @@ def user_summary():
         return redirect(url_for("lists"))
     return render_template("user_summary.html", user=user, tweets=tl)
 
+@app.route("/user/favorites")
+@requires_auth
+def user_favorites():
+    _id = request.args.get("id", None, type=int)
+    _last_tweet = request.args.get('last_tweet', None, type=int)
+    try:
+        user = make_api().GetUser(user_id=_id)
+        user.profile_image_url_https = user.profile_image_url_https.replace('normal', '200x200')
+        tl = make_api().GetFavorites(user_id=_id, count=200, max_id=_last_tweet)
+        for t in tl:
+            t = htmlize_tweet(t)
+    except twitter.error.TwitterError as e:
+        flash("Une erreur est survenue: {}".format(e.message))
+        return redirect(url_for("lists"))
+    return render_template("user_summary.html", user=user, tweets=tl)
 
 @app.route("/list/timeline")
 @requires_auth
