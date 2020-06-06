@@ -187,7 +187,7 @@ def get_replied_tweets(api, tweet):
         tw = api.GetStatus(_id)
         ret.append(tw)
         _id = tw.in_reply_to_status_id
-    return ret
+    return ret.reverse()
 
 def get_replies(api, tweet, max_id=None): # source : https://gist.github.com/edsu/54e6f7d63df3866a87a15aed17b51eaf
     user = tweet.user.screen_name
