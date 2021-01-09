@@ -91,7 +91,7 @@ def timeline():
     try:
         tl = make_api().GetHomeTimeline(count=TIMELINE_TWEET_COUNT, max_id=_last_tweet)
         for t in tl:
-            t = htmlize_tweet(t)
+            htmlize_tweet(t)
     except twitter.error.TwitterError as e:
         flash("Une erreur est survenue: {}".format(e.message))
         return redirect(url_for("lists"))
@@ -107,7 +107,7 @@ def user_summary():
         user.profile_image_url_https = user.profile_image_url_https.replace('normal', '200x200')
         tl = make_api().GetUserTimeline(user_id=_id, count=TIMELINE_TWEET_COUNT, max_id=_last_tweet)
         for t in tl:
-            t = htmlize_tweet(t)
+            htmlize_tweet(t)
     except twitter.error.TwitterError as e:
         flash("Une erreur est survenue: {}".format(e.message))
         return redirect(url_for("lists"))
@@ -123,7 +123,7 @@ def user_favorites():
         user.profile_image_url_https = user.profile_image_url_https.replace('normal', '200x200')
         tl = make_api().GetFavorites(user_id=_id, count=TIMELINE_TWEET_COUNT, max_id=_last_tweet)
         for t in tl:
-            t = htmlize_tweet(t)
+            htmlize_tweet(t)
     except twitter.error.TwitterError as e:
         flash("Une erreur est survenue: {}".format(e.message))
         return redirect(url_for("lists"))
@@ -137,7 +137,7 @@ def list_timeline():
     try:
         tl = make_api().GetListTimeline(list_id=_id, count=TIMELINE_TWEET_COUNT, max_id=_last_tweet)
         for t in tl:
-            t = htmlize_tweet(t)
+            htmlize_tweet(t)
     except twitter.error.TwitterError as e:
         flash("Une erreur est survenue: {}".format(e.message))
         return redirect(url_for("lists"))
@@ -155,14 +155,13 @@ def htmlize_tweet(t):
     for url in t.urls:
         t.full_text = t.full_text.replace(url.url, "<a href=\"{}\" class=\"tweet_link\">{}</a>".format(url.expanded_url, url.url))
     for u in t.user_mentions:
-        t.full_text = t.full_text.replace("@{}".format(u.screen_name), "<a href=\"#\" class=\"tweet_mention\">@{}</a>".format(u.screen_name))
+        t.full_text = t.full_text.replace("@{}".format(u.screen_name), "<a href=\"{}\" class=\"tweet_mention\">@{}</a>".format(url_for("user_summary", id=u.id_str), u.screen_name))
     for h in t.hashtags:
-        t.full_text = t.full_text.replace("#{}".format(h.text), "<a href=\"#\" class=\"tweet_hashtag\">#{}</a>".format(h.text))
+        t.full_text = t.full_text.replace("#{}".format(h.text), "<a href=\"{}\" class=\"tweet_hashtag\">#{}</a>".format(url_for("search", query="#{}".format(h.text)), h.text))
     if t.media:
         for med in t.media:
             t.full_text = t.full_text.replace(med.url, "")
     t.full_text = Markup(t.full_text)
-    return t
 
 @app.route("/tweet/response")
 @requires_auth
@@ -172,13 +171,14 @@ def tweet_info_response():
         try:
             api = make_api()
             tweet = api.GetStatus(_id)
-            rep = list(get_replies(api, tweet))
+            rep = list(get_replies(api, tweet, htmlize=htmlize_tweet))
             prev = get_replied_tweets(api, tweet)
         except twitter.error.TwitterError as e:
             flash("Une erreur est survenue: {}".format(e.message))
             return redirect(url_for("home"))
-#        for r in rep:
-#           r = htmlize_tweet(r)
+        htmlize_tweet(tweet)
+        for t in prev:
+            htmlize_tweet(t)
         return render_template("tweet_replies.html", tweet_initial=tweet, tweets=rep, prev=prev)
 
 def get_replied_tweets(api, tweet):
@@ -197,7 +197,7 @@ def get_replied_tweets(api, tweet):
                 flash("Une erreur est survenue: {}".format(e.message))
     return list(reversed(ret))
 
-def get_replies(api, tweet, max_id=None): # source : https://gist.github.com/edsu/54e6f7d63df3866a87a15aed17b51eaf
+def get_replies(api, tweet, max_id=None, htmlize=None): # source : https://gist.github.com/edsu/54e6f7d63df3866a87a15aed17b51eaf
     user = tweet.user.screen_name
     tweet_id = tweet.id
     while True:
@@ -210,7 +210,9 @@ def get_replies(api, tweet, max_id=None): # source : https://gist.github.com/eds
             if reply.in_reply_to_status_id == tweet_id:
                 rep = [reply]
                 rep2 = []
-                for reply_to_reply in get_replies(api, reply):
+                if htmlize:
+                    htmlize(reply)
+                for reply_to_reply in get_replies(api, reply, htmlize=htmlize):
                     rep2.append(reply_to_reply)
                 if len(rep2) != 0:
                     rep.append(rep2)
