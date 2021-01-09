@@ -18,6 +18,7 @@ def init_config(config_file):
 get_config = init_config("config.ini")
 
 app.secret_key = get_config("flask", "secret_key")
+TIMELINE_TWEET_COUNT = 70
 
 def requires_auth(f):
     @wraps(f)
@@ -88,7 +89,7 @@ def home():
 def timeline():
     _last_tweet = request.args.get('last_tweet', None, type=int)
     try:
-        tl = make_api().GetHomeTimeline(count=200, max_id=_last_tweet)
+        tl = make_api().GetHomeTimeline(count=TIMELINE_TWEET_COUNT, max_id=_last_tweet)
         for t in tl:
             t = htmlize_tweet(t)
     except twitter.error.TwitterError as e:
@@ -104,7 +105,7 @@ def user_summary():
     try:
         user = make_api().GetUser(user_id=_id)
         user.profile_image_url_https = user.profile_image_url_https.replace('normal', '200x200')
-        tl = make_api().GetUserTimeline(user_id=_id, count=200, max_id=_last_tweet)
+        tl = make_api().GetUserTimeline(user_id=_id, count=TIMELINE_TWEET_COUNT, max_id=_last_tweet)
         for t in tl:
             t = htmlize_tweet(t)
     except twitter.error.TwitterError as e:
@@ -120,7 +121,7 @@ def user_favorites():
     try:
         user = make_api().GetUser(user_id=_id)
         user.profile_image_url_https = user.profile_image_url_https.replace('normal', '200x200')
-        tl = make_api().GetFavorites(user_id=_id, count=200, max_id=_last_tweet)
+        tl = make_api().GetFavorites(user_id=_id, count=TIMELINE_TWEET_COUNT, max_id=_last_tweet)
         for t in tl:
             t = htmlize_tweet(t)
     except twitter.error.TwitterError as e:
@@ -134,7 +135,7 @@ def list_timeline():
     _id = request.args.get("id", type=int)
     _last_tweet = request.args.get('last_tweet', None, type=int)
     try:
-        tl = make_api().GetListTimeline(list_id=_id, count=200, max_id=_last_tweet)
+        tl = make_api().GetListTimeline(list_id=_id, count=TIMELINE_TWEET_COUNT, max_id=_last_tweet)
         for t in tl:
             t = htmlize_tweet(t)
     except twitter.error.TwitterError as e:
