@@ -185,9 +185,16 @@ def get_replied_tweets(api, tweet):
     ret = list()
     _id = tweet.in_reply_to_status_id
     while _id != None:
-        tw = api.GetStatus(_id)
-        ret.append(tw)
-        _id = tw.in_reply_to_status_id
+        try:
+            tw = api.GetStatus(_id)
+            ret.append(tw)
+            _id = tw.in_reply_to_status_id
+        except twitter.error.TwitterError as e:
+            if e.message[0]['code'] == 179:
+                ret.append(None)
+                _id = None
+            else:
+                flash("Une erreur est survenue: {}".format(e.message))
     return list(reversed(ret))
 
 def get_replies(api, tweet, max_id=None): # source : https://gist.github.com/edsu/54e6f7d63df3866a87a15aed17b51eaf

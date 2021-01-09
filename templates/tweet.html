@@ -1,64 +1,72 @@
 {% macro tweet(content, control=False) -%}
-{% if not content.retweeted_status %}
-	{% set usr=content.user %}
-	{% set id=content.id %}
+{% if content == None %}
+	<div class="tweet">
+		<div class="tweet_unauthorized">
+			Vous n'êtes pas autorisé à voir ce tweet
+		</div>
+	</div>
 {% else %}
-	{% set usr=content.retweeted_status.user %}
-	{% set id=content.retweeted_status.id %}
-{% endif %}
-<div class="tweet {% if content.possibly_sensitive %}notsafe{% endif %}">
-	{% if content.retweeted_status %}
-		<div class="tweet_rt">
-			<a href="{{ url_for('user_summary', id=content.user.id)}}"><span>{{ content.user.screen_name | e }}</span></a> a retweeter
-		</div>
+	{% if not content.retweeted_status %}
+		{% set usr=content.user %}
+		{% set id=content.id %}
+	{% else %}
+		{% set usr=content.retweeted_status.user %}
+		{% set id=content.retweeted_status.id %}
 	{% endif %}
-	<div class="tweet_title">
-		<h1>
-		<a href="{{ url_for('user_summary', id=usr.id)}}"><span class="tweet_tn">{{ usr.name | e }}</span> - <span class="tweet_name">@{{ usr.screen_name | e }}</span></a>
-	        	{% if usr.protected %}<span class="tweet_protected tweet_trinket">&#x1F512;</span>{% endif %}
-	        	{% if usr.verified %}<span class="tweet_verified tweet_trinket">&#x2714;&#xFE0F;</span>{% endif %}
-		</h1>
-	</div>
-	<div class="tweet_picture">
-		<a href="https://twitter.com/{{ usr.screen_name | e }}"><img src="{{ usr.profile_image_url_https | e }}" /></a>
-	</div>
-	<p>
-		{{ content.full_text }}
-	</p>
-	{% if content.media %}
-	<div class="tweet_media">
-		{% for media in content.media %}
-			{% if media.type == "photo" %}
-				<img src="{{ media.media_url_https }}" height="{{ media.sizes.small.h }}" width="{{ media.sizes.small.w }}" />
-			{% endif %}
-			{% if media.type == "animated_gif" %}
-				<video autoplay loop poster="{{ media.media_url_https }}" height="{{ media.sizes.small.h }}" width="{{ media.sizes.small.w }}">
-					{% for s in media.video_info.variants %}
-						<source src="{{ s.url }}" type="{{ s.content_type }}" /> 
-					{% endfor %}
-				</video> 
-			{% endif %}
-			{% if media.type == "video" %}
-				<video controls poster="{{ media.media_url_https }}" height="{{ media.sizes.small.h }}" width="{{ media.sizes.small.w }}">
-					{% for s in media.video_info.variants %}
-						<source src="{{ s.url }}" type="{{ s.content_type }}" /> 
-					{% endfor %}
-				</video> 
-			{% endif %}
-		{% endfor %}
-	</div>
-	{% endif %}
-	<div class="tweet_info">
-		<div class="tweet_action_bar">
-			<span><span>{{ content.retweet_count }}</span> RT</span>
-			<span> <span>{{ content.favorite_count }}</span> FAV</span>
-		</div>
-		<span class="tweet_date">{{ content.created_at }}</span>
-		<a href="{{ url_for('tweet_info_response', id=id, _anchor='origin') }}">Réponses</a>
-		{% if False %}
-		<pre style="overflow: hidden">{{ content }}</pre>
+	<div class="tweet {% if content.possibly_sensitive %}notsafe{% endif %}">
+		{% if content.retweeted_status %}
+			<div class="tweet_rt">
+				<a href="{{ url_for('user_summary', id=content.user.id)}}"><span>{{ content.user.screen_name | e }}</span></a> a retweeter
+			</div>
 		{% endif %}
-		<div class="tweet_color_bar" style="background-color: #{{ usr.profile_link_color }}"></div>
+		<div class="tweet_title">
+			<h1>
+			<a href="{{ url_for('user_summary', id=usr.id)}}"><span class="tweet_tn">{{ usr.name | e }}</span> - <span class="tweet_name">@{{ usr.screen_name | e }}</span></a>
+					{% if usr.protected %}<span class="tweet_protected tweet_trinket">&#x1F512;</span>{% endif %}
+					{% if usr.verified %}<span class="tweet_verified tweet_trinket">&#x2714;&#xFE0F;</span>{% endif %}
+			</h1>
+		</div>
+		<div class="tweet_picture">
+			<a href="https://twitter.com/{{ usr.screen_name | e }}"><img src="{{ usr.profile_image_url_https | e }}" /></a>
+		</div>
+		<p>
+			{{ content.full_text }}
+		</p>
+		{% if content.media %}
+		<div class="tweet_media">
+			{% for media in content.media %}
+				{% if media.type == "photo" %}
+					<img src="{{ media.media_url_https }}" height="{{ media.sizes.small.h }}" width="{{ media.sizes.small.w }}" />
+				{% endif %}
+				{% if media.type == "animated_gif" %}
+					<video autoplay loop poster="{{ media.media_url_https }}" height="{{ media.sizes.small.h }}" width="{{ media.sizes.small.w }}">
+						{% for s in media.video_info.variants %}
+							<source src="{{ s.url }}" type="{{ s.content_type }}" /> 
+						{% endfor %}
+					</video> 
+				{% endif %}
+				{% if media.type == "video" %}
+					<video controls poster="{{ media.media_url_https }}" height="{{ media.sizes.small.h }}" width="{{ media.sizes.small.w }}">
+						{% for s in media.video_info.variants %}
+							<source src="{{ s.url }}" type="{{ s.content_type }}" /> 
+						{% endfor %}
+					</video> 
+				{% endif %}
+			{% endfor %}
+		</div>
+		{% endif %}
+		<div class="tweet_info">
+			<div class="tweet_action_bar">
+				<span><span>{{ content.retweet_count }}</span> RT</span>
+				<span> <span>{{ content.favorite_count }}</span> FAV</span>
+			</div>
+			<span class="tweet_date">{{ content.created_at }}</span>
+			<a href="{{ url_for('tweet_info_response', id=id, _anchor='origin') }}">Réponses</a>
+			{% if False %}
+			<pre style="overflow: hidden">{{ content }}</pre>
+			{% endif %}
+			<div class="tweet_color_bar" style="background-color: #{{ usr.profile_link_color }}"></div>
+		</div>
 	</div>
-</div>
+{% endif %}
 {%- endmacro %}

@@ -118,6 +118,10 @@ nav .search {
 	color: black;
 }
 
+.tweet_unauthorized {
+	grid-column: 2;
+}
+
 .replies {
 	margin-left: 5px;
 }
