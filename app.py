@@ -187,7 +187,7 @@ def get_replied_tweets(api, tweet):
         tw = api.GetStatus(_id)
         ret.append(tw)
         _id = tw.in_reply_to_status_id
-    return list(ret)
+    return list(reversed(ret))
 
 def get_replies(api, tweet, max_id=None): # source : https://gist.github.com/edsu/54e6f7d63df3866a87a15aed17b51eaf
     user = tweet.user.screen_name
@@ -198,7 +198,7 @@ def get_replies(api, tweet, max_id=None): # source : https://gist.github.com/eds
             replies = api.GetSearch(term=q, since_id=tweet_id, max_id=max_id, count=200)
         except twitter.error.TwitterError as e:
             flash("Une erreur est survenue: {}".format(e.message))
-        for reply in replies:
+        for reply in reversed(replies):
             if reply.in_reply_to_status_id == tweet_id:
                 rep = [reply]
                 rep2 = []
