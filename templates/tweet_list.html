@@ -8,8 +8,10 @@
 	</div>
 	<div class="tweets_older">
 		{% set params = dict(request.args) %}
-		{% set _ = params.update({'last_tweet': tweets[-1].id_str}) %}
-		<a href="{{ url_for(request.endpoint, **params) }}">Afficher la suite</a>
+		{% if not params['last_tweet'] == tweets[-1].id_str %}
+			{% set _ = params.update({'last_tweet': tweets[-1].id_str}) %}
+			<a href="{{ url_for(request.endpoint, **params) }}">Afficher la suite</a>
+		{% endif %}
 	</div>
 {% else %}
 <p class="tweets notweets">
