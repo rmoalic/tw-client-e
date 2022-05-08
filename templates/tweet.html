@@ -55,6 +55,11 @@
 			{% endfor %}
 		</div>
 		{% endif %}
+		{% if content.oembed %}
+		<div class="tweet_oembed">
+			{{ content.oembed | safe }}
+		</div>
+		{% endif %}
 		<div class="tweet_info">
 			<div class="tweet_action_bar">
 				<span><span>{{ content.retweet_count }}</span> RT</span>

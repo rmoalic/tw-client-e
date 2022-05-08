@@ -5,7 +5,20 @@ import os
 from functools import wraps
 from requests_oauthlib import OAuth1Session, oauth1_session
 from flask import Flask, render_template, request, redirect, url_for, flash, Markup, session, abort
+import micawber
+
 app = Flask(__name__)
+oemb_providers = micawber.bootstrap_oembed()
+
+def oemb_request(url):
+    try:
+        res = oemb_providers.request(url)
+        return micawber.parsers.full_handler(url, res)
+    except micawber.exceptions.ProviderNotFoundException:
+        return None
+    except micawber.exceptions.ProviderException:
+        print("oemb provider exception for url: {}".format(url))
+        return None
 
 def init_config(config_file):
     config = configparser.ConfigParser()
@@ -161,6 +174,11 @@ def htmlize_tweet(t):
     if t.media:
         for med in t.media:
             t.full_text = t.full_text.replace(med.url, "")
+    t.oembed = None
+    if t.urls:
+        resp = oemb_request(t.urls[0].expanded_url)
+        if resp:
+            t.oembed = resp
     t.full_text = Markup(t.full_text)
 
 @app.route("/tweet/response")
